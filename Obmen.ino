@@ -1,121 +1,135 @@
 #include <EEPROM.h>
 #include <SD.h>
 
-const long BAUDRATE    = 115200;
+#include "Vinokur.h"
+#include "Obmen.h"
+#include "SensorsProcess.h"
 
-const char TIME_HEADER = 'T'; // Set time
-const char DATE_HEADER = 'D'; // Set date text
-const char PRES_HEADER = 'P'; // Set pressure
-const char READ_FILE   = 'S'; // Send log file
-const char DEL_FILE    = 'R'; // Remove log file
-const char PARAMETERS  = 'G'; // Передать все параметры
-const char LIST_SD     = 'L'; // Передать список файлов
+extern SensorsProcess _sensors;
 
-const byte END_OF_FILE = 12;
-const byte TIME_REQUEST= 7;
-
-
-void initObmen() {
+void initObmen()
+{
   Serial.begin(BAUDRATE);
 }
 
-
 // Called when data is available.
-void serialEvent() {
-  
-  char command=(char)Serial.read();
-  switch (command) {
-    case TIME_HEADER:
+void serialEvent()
+{
+
+  char command = (char)Serial.read();
+  switch (command)
+  {
+  case HELP_HEADER:
+    Serial.println("Список команд:");
+    Serial.println("\tT\tУстановить время число");
+    Serial.println("\tD\tУстановить время строка");
+    Serial.println("\tP\tУстановить давление");
+    Serial.println("\tS\tПослать файл-лог");
+    Serial.println("\tR\tУдалить файл-лог");
+    Serial.println("\tL\tПередать список файлов");
+    Serial.println("\tG\tПоказать параметры");
+    Serial.println("\tH\tПередать список команд");
+    break;
+  case TIME_HEADER:
+    {
+      unsigned long pctime = Serial.parseInt();
+      if (pctime > DEFAULT_TIME)
       {
-        unsigned long pctime = Serial.parseInt();
-        if (pctime > DEFAULT_TIME) {
-          setTime(pctime);
-        }
+        setTime(pctime);
       }
-      break;
-    case DATE_HEADER:
-      break;
-    case PRES_HEADER:
-      _sensors.setPressure(Serial.parseInt()); 
-      break;
-    case PARAMETERS:
-      Serial.println("Версия:\t"+String(EEPROM[0]));
-      //Serial.println("1:\t"+String(EEPROM[1]));
-      if (EEPROM[0]>0) {
-        int temp[4];
-        EEPROM.get(2, temp); // Первый блок параметров
-        Serial.println("Первичная дистилляция:");
-        Serial.println("Охлаждение куб:\t"+String(temp[0]/10));
-        Serial.println("Охлаждение деф:\t"+String(temp[1]/10));
-        Serial.println("Окончание куб:\t"+String(temp[2]/10));
-        Serial.println("Окончание деф:\t"+String(temp[3]/10));
-      }
-      if (EEPROM[0]>1) {
-        int temp[7];
-        EEPROM.get(10, temp); // Второй блок параметров
-        Serial.println("Дробная дистилляция:");
-        Serial.println("Охлаждение куб:\t"+String(temp[0]/10));
-        Serial.println("Охлаждение деф:\t"+String(temp[1]/10));
-        Serial.println("Окончание куб:\t"+String(temp[2]/10));
-        Serial.println("Окончание деф:\t"+String(temp[3]/10));
-        Serial.println("Время работы на себя:\t"+String(temp[4]));
-        Serial.println("Хвосты куб:\t"+String(temp[5]/10));
-        Serial.println("Хвосты деф:\t"+String(temp[6]/10));
-      }
-      for (int i=24;EEPROM[i]!=255;i++) {
-        Serial.println(String(i)+":\t"+String(EEPROM[i]));
-      }
-      break;
-    case LIST_SD:
+    }
+    break;
+  case DATE_HEADER:
+    break;
+  case PRES_HEADER:
+    _sensors.setPressure(Serial.parseInt());
+    break;
+  case PARAMETERS:
+    Serial.println("Версия:\t" + String(EEPROM[0]));
+    //Serial.println("1:\t"+String(EEPROM[1]));
+    if (EEPROM[0] > 0)
+    {
+      int temp[4];
+      EEPROM.get(2, temp); // Первый блок параметров
+      Serial.println("Первичная дистилляция:");
+      Serial.println("Охлаждение куб:\t" + String(temp[0] / 10));
+      Serial.println("Охлаждение деф:\t" + String(temp[1] / 10));
+      Serial.println("Окончание куб:\t" + String(temp[2] / 10));
+      Serial.println("Окончание деф:\t" + String(temp[3] / 10));
+    }
+    if (EEPROM[0] > 1)
+    {
+      int temp[7];
+      EEPROM.get(10, temp); // Второй блок параметров
+      Serial.println("Дробная дистилляция:");
+      Serial.println("Охлаждение куб:\t" + String(temp[0] / 10));
+      Serial.println("Охлаждение деф:\t" + String(temp[1] / 10));
+      Serial.println("Окончание куб:\t" + String(temp[2] / 10));
+      Serial.println("Окончание деф:\t" + String(temp[3] / 10));
+      Serial.println("Время работы на себя:\t" + String(temp[4]));
+      Serial.println("Хвосты куб:\t" + String(temp[5] / 10));
+      Serial.println("Хвосты деф:\t" + String(temp[6] / 10));
+    }
+    for (int i = 24; EEPROM[i] != 255; i++)
+    {
+      Serial.println(String(i) + ":\t" + String(EEPROM[i]));
+    }
+    break;
+  case LIST_SD:
+    {
+      File root = SD.open("/");
+      Serial.println(root.name());
+      File entry = root.openNextFile();
+      Serial.println(entry.name());
+      while (entry)
       {
-        File root = SD.open("/");
-        Serial.println(root.name());
-        File entry = root.openNextFile();
-        Serial.println(entry.name());
-        while (entry) {
-          Serial.print(entry.name());
-          if (entry.isDirectory())
-            Serial.println("/");
-          else {
-            Serial.print("\t\t");
-            Serial.println(entry.size(), DEC);
-          }
-          entry.close();
-          entry = root.openNextFile();
+        Serial.print(entry.name());
+        if (entry.isDirectory())
+          Serial.println("/");
+        else
+        {
+          Serial.print("\t\t");
+          Serial.println(entry.size(), DEC);
         }
-        Serial.println("Done...");
+        entry.close();
+        entry = root.openNextFile();
       }
-      break;
+      Serial.println("Done...");
+    }
+    break;
 #ifdef _LOG_
-    case READ_FILE:
+  case READ_FILE:
+    {
+      File dataFile = SD.open("distmash.csv", FILE_READ);
+      if (dataFile)
       {
-        File dataFile = SD.open("distmash.csv", FILE_READ);
-        if (dataFile) {
-          while (dataFile.available()) {
-            Serial.write(dataFile.read());
-          }
-          Serial.write(END_OF_FILE);
-          dataFile.close();
+        while (dataFile.available())
+        {
+          Serial.write(dataFile.read());
         }
-      }
-      break;
-    case DEL_FILE:
-      if (SD.exists("distmash.csv")) {
-        File dataFile = SD.open("distmash.csv", O_WRITE | O_TRUNC);
+        Serial.write(END_OF_FILE);
         dataFile.close();
       }
-      break;
+    }
+    break;
+  case DEL_FILE:
+    if (SD.exists("distmash.csv"))
+    {
+      File dataFile = SD.open("distmash.csv", O_WRITE | O_TRUNC);
+      dataFile.close();
+    }
+    break;
 #endif
-    default:
-      Serial.println((char)command);
+  default:
+    Serial.println((char)command);
   }
 }
 
 #ifndef _RTC_
 // Time Sync provaider (Send time request to Serial)
-time_t requestSync() {
+time_t requestSync()
+{
   //Serial.write(TIME_REQUEST);
   return 0;
 }
 #endif
-
