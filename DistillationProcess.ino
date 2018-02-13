@@ -137,13 +137,13 @@ void DistillationProcess::setPrevState()
   }
 }
 
-// Ð£Ð¿Ñ€Ð°Ð²Ð»ÐµÐ½Ð¸Ðµ Ð¿Ð¾Ð´Ð°Ñ‡ÐµÐ¹ Ð¾Ñ…Ð»Ð°Ð¶Ð´ÐµÐ½Ð¸Ñ Ð² Ñ…Ð¾Ð»Ð¾Ð´Ð¸Ð»ÑŒÐ½Ð¸Ðº Ð´Ð¸ÑÑ‚Ð¸Ð»Ð»ÑÑ‚Ð¾Ñ€Ð°
+// Óïðàâëåíèå ïîäà÷åé îõëàæäåíèÿ â õîëîäèëüíèê äèñòèëëÿòîðà
 void DistillationProcess::setCooling(int procent)
 {
   _cooling = procent;
 }
 
-// Ð£Ð¿Ñ€Ð°Ð²Ð»ÐµÐ½Ð¸Ðµ Ð½Ð°Ð³Ñ€ÐµÐ²Ð¾Ð¼ ÐºÑƒÐ±Ð°
+// Óïðàâëåíèå íàãðåâîì êóáà
 void DistillationProcess::setHeating(int procent)
 {
   _heating = procent;
@@ -154,23 +154,23 @@ String DistillationProcess::getStateString()
   switch (_state)
   {
   case STATE_STOPS:
-    return "Ð¡Ñ‚Ð¾Ð¿  ";
+    return "Ñòîï  ";
   case STATE_HEAT:
-    return "ÐÐ°Ð³Ñ€ÐµÐ²";
+    return "Íàãðåâ";
   case STATE_DISTIL:
-    return "ÐžÑ‚Ð±Ð¾Ñ€ ";
+    return "Îòáîð ";
   case STATE_END:
-    return "ÐšÐ¾Ð½ÐµÑ† ";
+    return "Êîíåö ";
   case STATE_CANCEL:
-    return "ÐŸÑ€ÐµÑ€Ð²Ð½";
+    return "Ïðåðâí";
   case STATE_EQUIL:
-    return "ÐÐ°Ð¡ÐµÐ±Ñ";
+    return "ÍàÑåáÿ";
   case STATE_HEAD:
-    return "Ð“Ð¾Ð»Ð¾Ð²Ñ‹";
+    return "Ãîëîâû";
   case STATE_HEART:
-    return "Ð¢ÐµÐ»Ð¾  ";
+    return "Òåëî  ";
   case STATE_TAILS:
-    return "Ð¥Ð²Ð¾ÑÑ‚Ñ‹";
+    return "Õâîñòû";
   default:
     break;
   };
@@ -180,7 +180,7 @@ String DistillationProcess::getStateString()
 void DistillationProcess::readDataEEPROM()
 {
   if (EEPROM[0] == 255)
-  { // EEPROM Ñ‡Ð¸ÑÑ‚Ñ‹Ð¹
+  { // EEPROM ÷èñòûé
     _temp_cool_on = 75.0;
     _temp_def_cool_on = 50.0;
     _temp_distil_off = 98.0;     // 8%
@@ -190,7 +190,7 @@ void DistillationProcess::readDataEEPROM()
   else
   {
     int temp[4];
-    EEPROM.get(2, temp); // ÐŸÐµÑ€Ð²Ñ‹Ð¹ Ð±Ð»Ð¾Ðº Ð¿Ð°Ñ€Ð°Ð¼ÐµÑ‚Ñ€Ð¾Ð²
+    EEPROM.get(2, temp); // Ïåðâûé áëîê ïàðàìåòðîâ
     _temp_cool_on = temp[0] / 10;
     _temp_def_cool_on = temp[1] / 10;
     _temp_distil_off = temp[2] / 10;
@@ -207,7 +207,7 @@ void DistillationProcess::writeDataEEPROM()
   temp[2] = int(_temp_distil_off * 10);
   temp[3] = int(_temp_def_distil_off * 10);
   if (EEPROM[0] == 255)
-  { // EEPROM Ñ‡Ð¸ÑÑ‚Ñ‹Ð¹
+  { // EEPROM ÷èñòûé
     EEPROM[0] = 1;
     EEPROM.put(2, temp);
   }
@@ -283,8 +283,8 @@ void FractioningProcess::service()
       time_boiling = millis();
     }
     if ((millis() - time_boiling) > 20000)
-    {                                                   // 20 ÑÐµÐºÑƒÐ½Ð´
-      if (abs(_sp->getThempKub() - temp_boiling) < 0.1) // 20 ÑÐµÐºÑƒÐ½Ð´ Ð½Ðµ Ð¸Ð·Ð¼ÐµÐ½ÑÐµÑ‚ÑÑ Ñ‚ÐµÐ¼Ð¿ÐµÑ€Ð°Ñ‚ÑƒÑ€Ð°?
+    {                                                   // 20 ñåêóíä
+      if (abs(_sp->getThempKub() - temp_boiling) < 0.1) // 20 ñåêóíä íå èçìåíÿåòñÿ òåìïåðàòóðà?
         boiling_kub = temp_boiling;
       else
       {
@@ -350,15 +350,15 @@ void FractioningProcess::setPrevState()
 
 void FractioningProcess::readDataEEPROM()
 {
-  if (EEPROM[0] == 255) // EEPROM Ñ‡Ð¸ÑÑ‚Ñ‹Ð¹ Ð·Ð°Ð¿Ð¸ÑÐ°Ñ‚ÑŒ Ð¿Ð°Ñ€Ð°Ð¼ÐµÑ‚Ñ€Ñ‹ Ð¿Ñ€ÐµÐ³Ð¾Ð½ÐºÐ¸ Ð±Ñ€Ð°Ð³Ð¸
+  if (EEPROM[0] == 255) // EEPROM ÷èñòûé çàïèñàòü ïàðàìåòðû ïðåãîíêè áðàãè
     DistillationProcess::readDataEEPROM();
   if (EEPROM[0] == 1)
-  { // EEPROM Ñ Ð¿Ð°Ñ€Ð°Ð¼ÐµÑ‚Ñ€Ð°Ð¼Ð¸ Ð´Ð»Ñ Ð¿ÐµÑ€ÐµÐ³Ð¾Ð½ÐºÐ¸ Ð±Ñ€Ð°Ð³Ð¸, Ð·Ð°Ð¿Ð¸ÑÐ°Ñ‚ÑŒ Ð¿Ð°Ñ€Ð°Ð¼ÐµÑ‚Ñ€Ñ‹ Ð´Ð»Ñ Ð´Ñ€Ð¾Ð±Ð½Ð¾Ð¹ Ð¿ÐµÑ€ÐµÐ³Ð¾Ð½ÐºÐ¸
+  { // EEPROM ñ ïàðàìåòðàìè äëÿ ïåðåãîíêè áðàãè, çàïèñàòü ïàðàìåòðû äëÿ äðîáíîé ïåðåãîíêè
     _temp_cool_on = 75.0;
     _temp_def_cool_on = 50.0;
     _temp_distil_off = 98.0;     // 8%
     _temp_def_distil_off = 99.1; // 10%
-    _equilibrate_time = 1200;    // 20 Ð¼Ð¸Ð½ÑƒÑ‚
+    _equilibrate_time = 1200;    // 20 ìèíóò
     _temp_heart_off = 92.0;
     _temp_def_heart_off = 80.0;
     writeDataEEPROM();
@@ -366,7 +366,7 @@ void FractioningProcess::readDataEEPROM()
   else
   {
     int temp[7];
-    EEPROM.get(10, temp); // Ð’Ñ‚Ð¾Ñ€Ð¾Ð¹ Ð±Ð»Ð¾Ðº Ð¿Ð°Ñ€Ð°Ð¼ÐµÑ‚Ñ€Ð¾Ð²
+    EEPROM.get(10, temp); // Âòîðîé áëîê ïàðàìåòðîâ
     _temp_cool_on = temp[0] / 10;
     _temp_def_cool_on = temp[1] / 10;
     _temp_distil_off = temp[2] / 10;
@@ -388,7 +388,7 @@ void FractioningProcess::writeDataEEPROM()
   temp[4] = _equilibrate_time;
   temp[5] = int(_temp_heart_off * 10);
   temp[6] = int(_temp_def_heart_off * 10);
-  if (EEPROM[0] == 255) // EEPROM Ñ‡Ð¸ÑÑ‚Ñ‹Ð¹ ÐžÐ¨Ð˜Ð‘ÐšÐ!
+  if (EEPROM[0] == 255) // EEPROM ÷èñòûé ÎØÈÁÊÀ!
     return;
   if (EEPROM[0] == 1)
   {

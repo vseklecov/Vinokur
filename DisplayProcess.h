@@ -33,7 +33,7 @@ public:
   void setCurrentScreen(enum SCREENS scr) { curScreen = scr; }
   void showCursor(int, int, word);
 
-  Input *ActiveInput;
+  Input *activeInput;
 
 private:
   UTFT *_myLCD;

@@ -9,9 +9,9 @@ const char DATE_HEADER = 'D'; // Set date text
 const char PRES_HEADER = 'P'; // Set pressure
 const char READ_FILE = 'S';   // Send log file
 const char DEL_FILE = 'R';    // Remove log file
-const char PARAMETERS = 'G';  // РџРµСЂРµРґР°С‚СЊ РІСЃРµ РїР°СЂР°РјРµС‚СЂС‹
-const char LIST_SD = 'L';     // РџРµСЂРµРґР°С‚СЊ СЃРїРёСЃРѕРє С„Р°Р№Р»РѕРІ
-const char HELP_HEADER = 'H'; // РџРµСЂРµРґР°С‚СЊ СЃРїРёСЃРѕРє РєРѕРјР°РЅРґ
+const char PARAMETERS = 'G';  // Передать все параметры
+const char LIST_SD = 'L';     // Передать список файлов
+const char HELP_HEADER = 'H'; // Передать список команд
 
 const byte END_OF_FILE = 12;
 const byte TIME_REQUEST = 7;

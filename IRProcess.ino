@@ -41,17 +41,17 @@ char IRProcess::convertNEC(unsigned long code)
 {
     switch (code)
     {
-    case 0xFFA25D: // Р’РєР»
+    case 0xFFA25D: // Вкл
         return KEY_ON;
     case 0xFF629D: // Mode
         return KEY_MODE;
-    case 0xFFE21D:        // Р—РІСѓРє РІС‹РєР»
+    case 0xFFE21D:        // Звук выкл
         return KEY_SOUND; // Escape
     case 0xFF22DD:        // Play/pause
         return KEY_PLAY;
-    case 0xFF02FD: // РџСЂРµРґС‹РґСѓС‰РёР№
+    case 0xFF02FD: // Предыдущий
         return KEY_PREV;
-    case 0xFFC23D: // РЎР»РµРґСѓСЋС‰РёР№
+    case 0xFFC23D: // Следующий
         return KEY_NEXT;
     case 0xFFE01F: // EQ
         return KEY_EQ;
@@ -59,7 +59,7 @@ char IRProcess::convertNEC(unsigned long code)
         return KEY_MINUS;
     case 0xFF906F: // '+'
         return KEY_PLUS;
-    case 0xFF9867:        // РЎС‚СЂРµР»РєРё С‚СѓРґР°-СЃСЋРґР°
+    case 0xFF9867:        // Стрелки туда-сюда
         return KEY_ARROW; // Backspace
     case 0xFFB04F:        // U/SD
         return KEY_U_SD;  // Enter

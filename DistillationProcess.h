@@ -70,10 +70,10 @@ public:
   //  private:
   SensorsProcess *_sp;
   states _state;
-  float _temp_cool_on;        // РўРµРјРїРµСЂР°С‚СѓСЂР° РєСѓР±Р° РґР»СЏ РІРєР»СЋС‡РµРЅРёСЏ РѕС…Р»Р°Р¶РґРµРЅРёСЏ
-  float _temp_def_cool_on;    // РўРµРјРїРµСЂР°С‚СѓСЂР° РїРµСЂРµРґ С…РѕР»РѕРґРёР»СЊРЅРёРєРѕРј РґР»СЏ РІРєР»СЋС‡РµРЅРёСЏ РѕС…Р»Р°Р¶РґРµРЅРёСЏ
-  float _temp_distil_off;     // РўРµРјРїРµСЂР°С‚СѓСЂР° РєСѓР±Р° РѕРєРѕРЅС‡Р°РЅРёСЏ РґРёСЃС‚РёР»Р»СЏС†РёРё
-  float _temp_def_distil_off; // РўРµРјРїРµСЂР°С‚СѓСЂР° РїРµСЂРµРґ С…РѕР»РѕРґРёР»СЊРЅРёРєРѕРј РѕРєРѕРЅС‡Р°РЅРёСЏ РґРёСЃС‚РёР»Р»СЏС†РёРё
+  float _temp_cool_on;        // Температура куба для включения охлаждения
+  float _temp_def_cool_on;    // Температура перед холодильником для включения охлаждения
+  float _temp_distil_off;     // Температура куба окончания дистилляции
+  float _temp_def_distil_off; // Температура перед холодильником окончания дистилляции
 
   int _cooling;
   int _heating;
@@ -88,7 +88,7 @@ public:
   DistillMashProcess(Scheduler &manager, ProcPriority pr, unsigned int period, SensorsProcess *sp)
       : DistillationProcess(manager, pr, period, sp) {}
 
-  String getHeader() { return "Р”РёСЃС‚РёР»Р»СЏС†РёСЏ Р±СЂР°РіРё"; }
+  String getHeader() { return "Дистилляция браги"; }
 };
 
 class FractioningProcess : public DistillationProcess
@@ -108,12 +108,12 @@ public:
   void readDataEEPROM(void);
   void writeDataEEPROM(void);
 
-  String getHeader() { return "Р”СЂРѕР±РЅР°СЏ РїРµСЂРµРіРѕРЅРєР°"; }
+  String getHeader() { return "Дробный перегон"; }
 
   //  private:
-  int _equilibrate_time;     // Р’СЂРµРјСЏ СЂР°Р±РѕС‚С‹ РЅР° СЃРµР±СЏ РєРѕР»РѕРЅРЅС‹ РІ СЃРµРєСѓРЅРґР°С…
-  float _temp_heart_off;     // РўРµРјРїРµСЂР°С‚СѓСЂР° РєСѓР±Р° РѕРєРѕРЅС‡Р°РЅРёСЏ РѕС‚Р±РѕСЂР° С‚РµР»Р°
-  float _temp_def_heart_off; // РўРµРјРїРµСЂР°С‚СѓСЂР° РїРµСЂРµРґ С…РѕР»РѕРґРёР»СЊРЅРёРєРѕРј РѕРєРѕРЅС‡Р°РЅРёСЏ РѕС‚Р±РѕСЂР° С‚РµР»Р°
+  int _equilibrate_time;     // Время работы на себя колонны в секундах
+  float _temp_heart_off;     // Температура куба окончания отбора тела
+  float _temp_def_heart_off; // Температура перед холодильником окончания отбора тела
 };
 
 #endif

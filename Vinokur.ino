@@ -1,7 +1,7 @@
 #include "Vinokur.h"
 #include "Obmen.h"
 
-// ============== РРЅРёС†РёР°Р»РёР·Р°С†РёСЏ РіР»РѕР±Р°Р»СЊРЅС‹С… РїРµСЂРµРјРµРЅРЅС‹С…
+// ============== Инициализация глобальных переменных
 
 #include <ProcessScheduler.h>
 Scheduler sched;
@@ -47,12 +47,12 @@ IRProcess _ir(sched, HIGH_PRIORITY, 500, IR_PIN);
 Buzzer buzzer(sched, HIGH_PRIORITY, 50, BUZZER);
 #endif
 
-unsigned long cMillis; // РўРµРєСѓС‰РµРµ РІСЂРµРјСЏ
+unsigned long cMillis; // Текущее время
 
-// РЎРѕСЃС‚РѕСЏРЅРёРµ РїСЂРѕС†РµСЃСЃР°
+// Состояние процесса
 //enum distillation {MAIN, FIRST, STEAM, FIRST_G, FRACTIONAL} state = MAIN;
 
-// ============== РРЅРёС†РёР°Р»РёР·Р°С†РёСЏ РіР»РѕР±Р°Р»СЊРЅС‹С… РїРµСЂРµРјРµРЅРЅС‹С… )))
+// ============== Инициализация глобальных переменных )))
 
 void setup()
 {

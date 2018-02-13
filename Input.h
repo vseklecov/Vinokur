@@ -38,9 +38,9 @@ class Input
     char *value;
     char filler;
     char delimiter;
-    int cursor;
-    int cursor_x;
-    int cursor_y;
+    unsigned int cursor;
+    unsigned int cursor_x;
+    unsigned int cursor_y;
 };
 
 #endif

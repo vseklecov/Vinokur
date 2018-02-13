@@ -19,7 +19,7 @@ extern UTFT myLCD;
 extern DistillMashProcess _distilMash;
 extern FractioningProcess _refluxStill;
 
-extern uint8_t Tahoma[];
+extern uint8_t Tahoma1251[];
 
 #include "Button.h"
 
@@ -27,31 +27,33 @@ Button *cool;
 Button *heating;
 Button *finish;
 Button *alarm;
+Input *inputTime;
 
 byte next_ch = 0;
 char _time[] = {'0', '0', ':', '0', '0', ':', '0', '0', '\0'};
 
 void DisplayProcess::setup()
 {
+  //  char buf[32];
+
   _myLCD->InitLCD();
   _myLCD->clrScr();
-  _myLCD->setFont(Tahoma);
+  _myLCD->setFont(Tahoma1251);
   _fontXSize = _myLCD->getFontXsize();
   _fontYSize = _myLCD->getFontYsize();
 
-  // Ð—Ð°ÑÑ‚Ð°Ð²ÐºÐ°
   _myLCD->setColor(VGA_AQUA);
-  _myLCD->print(utf8rus("Ð’Ð˜ÐÐžÐšÐ£Ð "), CENTER, _fontYSize * 2);
-  _myLCD->print(utf8rus("Ð²ÐµÑ€ÑÐ¸Ñ 0.15"), CENTER, _fontYSize * 4);
+  _myLCD->print((char *)"ÂÈÍÎÊÓÐ", CENTER, _fontYSize * 2);
+  _myLCD->print((char *)"âåðñèÿ 0.17", CENTER, _fontYSize * 4);
 
-  heating = new Button(_fontXSize / 2, _fontYSize * 5, utf8rus("ÐÐÐ“Ð Ð•Ð’"));
-  cool = new Button(_fontXSize * 8, _fontYSize * 5, utf8rus("ÐžÐ¥Ð›"));
-  finish = new Button(_fontXSize * 12.5, _fontYSize * 5, utf8rus("ÐšÐžÐÐ•Ð¦"));
+  heating = new Button(_fontXSize / 2, _fontYSize * 5, (char *)"Íàãð");
+  cool = new Button(_fontXSize * 8, _fontYSize * 5, (char *)"Îõë");
+  finish = new Button(_fontXSize * 12.5, _fontYSize * 5, (char *)"Êîíåö");
 
 #ifdef _IR_
-  //Input *param1 = new Input(_myLCD, 0, _fontYSize, "1234567890:", "000", '.', '0');
-  //param1->draw();
-  _myLCD->print(utf8rus("Ð’Ñ€ÐµÐ¼Ñ:"), 0, _fontYSize * 6);
+  //inputTime = new Input(_myLCD, 0, _fontYSize*6, "Âðåìÿ:", "00:00:00", ':', '0');
+  //inputTime->draw();
+  _myLCD->print((char *)"Âðåìÿ:", 0, _fontYSize * 6);
   _myLCD->print(_time, _fontXSize * 8, _fontYSize * 6);
   _ir.setCallback(getTime);
 #else
@@ -66,48 +68,48 @@ void DisplayProcess::changeScreen()
   _myLCD->clrScr();
   switch (curScreen)
   {
-  case MAIN_MENU: // ÐžÑÐ½Ð¾Ð²Ð½Ð¾Ðµ Ð¼ÐµÐ½ÑŽ
+  case MAIN_MENU: // Îñíîâíîå ìåíþ
     _myLCD->setColor(VGA_AQUA);
-    _myLCD->print(utf8rus("Ð’Ñ‹Ð±Ð¾Ñ€ Ñ€ÐµÐ¶Ð¸Ð¼Ð° Ñ€Ð°Ð±Ð¾Ñ‚Ñ‹:"), CENTER, 0);
-    _myLCD->print(utf8rus("0. ÐŸÐ°Ñ€Ð°Ð¼ÐµÑ‚Ñ€Ñ‹"), 0, _fontYSize);
-    _myLCD->print(utf8rus("1. " + _distilMash.getHeader()), 0, _fontYSize * 2);
-    _myLCD->print(utf8rus("2. " + _refluxStill.getHeader()), 0, _fontYSize * 3);
+    _myLCD->print((char *)"Ðåæèì ðàáîòû:", CENTER, 0);
+    _myLCD->print((char *)"0. Ïàðàìåòðû", 0, _fontYSize);
+    _myLCD->print("1. " + _distilMash.getHeader(), 0, _fontYSize * 2);
+    _myLCD->print("2. " + _refluxStill.getHeader(), 0, _fontYSize * 3);
 #ifdef _IR_
     _ir.setCallback(getMode);
 #endif
     break;
-  case PARAMETERS: // ÐŸÐ°Ñ€Ð°Ð¼ÐµÑ‚Ñ€Ñ‹
+  case PARAMETERS: // Ïàðàìåòðû
   {
-    Input *param1 = new Input(_myLCD, 0, _fontYSize, "1234567890:", "000", '.', '0');
+    Input *param1 = new Input(_myLCD, 0, _fontYSize, (char *)"1234567890:", (char *)"000", '.', '0');
     param1->draw();
   }
-    break;
-  case DISTIL_MASH: // ÐŸÐµÑ€Ð²Ð°Ñ Ð¿ÐµÑ€ÐµÐ³Ð¾Ð½ÐºÐ° Ð±Ñ€Ð°Ð³Ð¸
+  break;
+  case DISTIL_MASH: // Ïåðâàÿ ïåðåãîíêà áðàãè
     _myLCD->setColor(VGA_AQUA);
-    _myLCD->print(utf8rus(_distilMash.getHeader()), CENTER, 0);
-    _myLCD->print(utf8rus("ÐšÑƒÐ±"), _fontXSize, _fontYSize * 2);
-    _myLCD->print(utf8rus("Ð”ÐµÑ„"), _fontXSize, _fontYSize * 3);
+    _myLCD->print(_distilMash.getHeader(), CENTER, 0);
+    _myLCD->print((char *)"Êóá", _fontXSize, _fontYSize * 2);
+    _myLCD->print((char *)"Äåô", _fontXSize, _fontYSize * 3);
 #ifdef _LM35_
     _myLCD->print((char *)"TST", _fontXSize, _fontYSize * 10);
 #endif
     _myLCD->printChar('%', _fontXSize * 16, _fontYSize * 2);
     _myLCD->printChar('%', _fontXSize * 16, _fontYSize * 3);
 #ifdef _PRESS_
-    _myLCD->print(utf8rus("Ð¼Ð¼"), _fontXSize * 18, _fontYSize * 9);
+    _myLCD->print((char *)"ìì", _fontXSize * 18, _fontYSize * 9);
 #endif
     cool->draw();
     heating->draw();
     finish->draw();
     break;
-  case FRACTION: // Ð”Ñ€Ð¾Ð±Ð½Ð°Ñ Ð¿ÐµÑ€ÐµÐ³Ð¾Ð½ÐºÐ°
+  case FRACTION: // Äðîáíàÿ ïåðåãîíêà
     _myLCD->setColor(VGA_AQUA);
-    _myLCD->print(utf8rus(_refluxStill.getHeader()), CENTER, 0);
-    _myLCD->print(utf8rus("ÐšÑƒÐ±"), _fontXSize, _fontYSize * 2);
-    _myLCD->print(utf8rus("Ð”ÐµÑ„"), _fontXSize, _fontYSize * 3);
+    _myLCD->print(_refluxStill.getHeader(), CENTER, 0);
+    _myLCD->print((char *)"Êóá", _fontXSize, _fontYSize * 2);
+    _myLCD->print((char *)"Äåô", _fontXSize, _fontYSize * 3);
     _myLCD->printChar('%', _fontXSize * 16, _fontYSize * 2);
     _myLCD->printChar('%', _fontXSize * 16, _fontYSize * 3);
 #ifdef _PRESS_
-    _myLCD->print(utf8rus("Ð¼Ð¼"), _fontXSize * 18, _fontYSize * 9);
+    _myLCD->print((char *)"ìì", _fontXSize * 18, _fontYSize * 9);
 #endif
     cool->draw();
     heating->draw();
@@ -133,7 +135,7 @@ void DisplayProcess::service()
   switch (curScreen)
   {
   case SPLASH:
-    _myLCD->print(_time, _fontXSize * 8, _fontYSize * 6);
+    //_myLCD->print(_time, _fontXSize * 8, _fontYSize * 6);
     if (next_ch != 0)
     {
       if (_time[next_ch - 1] == ':')
@@ -143,11 +145,11 @@ void DisplayProcess::service()
     }
     showCursor(_fontXSize * (8 + next_ch), _fontYSize * 6, _myLCD->getColor());
     break;
-  case MAIN_MENU: // ÐžÑÐ½Ð¾Ð²Ð½Ð¾Ðµ Ð¼ÐµÐ½ÑŽ
+  case MAIN_MENU: // Îñíîâíîå ìåíþ
     break;
-  case DISTIL_MASH: // ÐŸÐµÑ€Ð²Ð°Ñ Ð¿ÐµÑ€ÐµÐ³Ð¾Ð½ÐºÐ° Ð±Ñ€Ð°Ð³Ð¸
+  case DISTIL_MASH: // Ïåðâàÿ ïåðåãîíêà áðàãè
     _myLCD->setColor(VGA_AQUA);
-    _myLCD->print(utf8rus(_distilMash.getStateString()), 0, _fontYSize);
+    _myLCD->print(_distilMash.getStateString(), 0, _fontYSize);
 #ifdef _DEBUG_
     Serial.println("Display Process: State string " + String(millis() - b_t));
     b_t = millis();
@@ -157,6 +159,8 @@ void DisplayProcess::service()
 #ifdef _PRESS_
     _myLCD->printNumI(round(_sensors.getPressure() * 7.5E-3), _fontXSize * 15, _fontYSize * 9, 3);
 #endif
+    if (_distilMash.boiling_kub > 0)
+      _myLCD->printNumF(_distilMash.boiling_kub, 1, 0, _fontYSize * 9);
 
 #ifdef _DEBUG_
     Serial.println("Display Process: format time string " + String(millis() - b_t));
@@ -185,7 +189,7 @@ void DisplayProcess::service()
     Serial.println("Display Process: Alc def string " + String(millis() - b_t));
     b_t = millis();
 #endif
-    // Ð£Ð¿Ñ€Ð°Ð²Ð»ÐµÐ½Ð¸Ðµ
+    // Óïðàâëåíèå
     if (_distilMash.getHeating() != heating->getState())
     {
       heating->setState(_distilMash.getHeating());
@@ -219,12 +223,14 @@ void DisplayProcess::service()
 #ifdef _PRESS_
     _myLCD->printNumI(round(_sensors.getPressure() * 7.5E-3), _fontXSize * 15, _fontYSize * 9, 3);
 #endif
+    if (_refluxStill.boiling_kub > 0)
+      _myLCD->printNumF(_refluxStill.boiling_kub, 1, 0, _fontYSize * 9);
     _myLCD->printNumF(_sensors.getThempKub(), 1, _fontXSize * 5, _fontYSize * 2, '.', 5);
     _myLCD->printNumF(_sensors.getThempDef(), 1, _fontXSize * 5, _fontYSize * 3, '.', 5);
     _myLCD->printNumF(alcLiq(_sensors.getThempKub()), 1, _fontXSize * 12, _fontYSize * 2, '.', 4);
     _myLCD->printNumF(alcSteam(_sensors.getThempDef()), 1, _fontXSize * 12, _fontYSize * 3, '.', 4);
 
-    // Ð£Ð¿Ñ€Ð°Ð²Ð»ÐµÐ½Ð¸Ðµ
+    // Óïðàâëåíèå
     if (_refluxStill.getHeating() != heating->getState())
     {
       heating->setState(_refluxStill.getHeating());
@@ -259,7 +265,7 @@ void DisplayProcess::service()
 #endif
 }
 
-/* ÐŸÐµÑ€ÐµÐºÐ¾Ð´Ð¸Ñ€Ð¾Ð²ÐºÐ° Ñ€ÑƒÑÑÐºÐ¸Ñ… ÑÐ¸Ð¼Ð²Ð¾Ð»Ð¾Ð² Ð¸Ð· UTF-8 Ð² Windows-1251 ÑÐ¾ ÑÐ¼ÐµÑ‰ÐµÐ½Ð¸ÐµÐ¼ 0x40(Ð) ÐºÐ°Ðº Ð² Tahoma*/
+/* Ïåðåêîäèðîâêà ðóññêèõ ñèìâîëîâ èç UTF-8 â Windows-1251 ñî ñìåùåíèåì 0x40(¨) êàê â Tahoma*/
 String DisplayProcess::utf8rus(String source)
 {
   int i = 0;
@@ -320,6 +326,9 @@ void DisplayProcess::showCursor(int x, int y, word color)
 void getTime(char ch)
 {
   int Hour, Min, Sec;
+  unsigned int cursor_x = myLCD.getFontXsize();
+  unsigned int cursor_y = myLCD.getFontYsize() * 6;
+
   switch (ch)
   {
   case KEY_NONE:
@@ -336,6 +345,9 @@ void getTime(char ch)
     if (_time[next_ch] == ':')
       next_ch--;
     _time[next_ch] = '0';
+    cursor_x = cursor_x * (8 + next_ch);
+    myLCD.printChar('0', cursor_x, cursor_y);
+
     return;
   }
   case KEY_0:
@@ -350,6 +362,9 @@ void getTime(char ch)
   case KEY_9:
   {
     _time[next_ch] = ch;
+    cursor_x = cursor_x * (8 + next_ch);
+    myLCD.printChar(ch, cursor_x, cursor_y);
+
     next_ch++;
     if (next_ch > 7)
       break;
@@ -388,6 +403,45 @@ void getMode(char ch)
   default:
     break;
   }
+}
+
+void getTimeNew(char ch)
+{
+  if (_display.activeInput == NULL)
+    return;
+  Serial.println(ch);
+  switch (ch)
+  {
+  case KEY_NONE:
+    return;
+
+  case KEY_U_SD:
+    break;
+
+  case KEY_ARROW:
+    _display.activeInput->remove_char();
+    break;
+  case KEY_0:
+  case KEY_1:
+  case KEY_2:
+  case KEY_3:
+  case KEY_4:
+  case KEY_5:
+  case KEY_6:
+  case KEY_7:
+  case KEY_8:
+  case KEY_9:
+    if (_display.activeInput->add_char(ch))
+      break;
+    else
+      return;
+  default:
+    return;
+  }
+  setTime(_display.activeInput->getTimeValue());
+  _ir.setCallback(NULL);
+  _display.activeInput = NULL;
+  _display.setCurrentScreen(DisplayProcess::MAIN_MENU);
 }
 
 #endif

@@ -51,12 +51,12 @@ class SensorsProcess : public Process
 
   private:
     DallasTemperature _sensors;
-    DeviceAddress kubThermometer = {0x28, 0xFF, 0x57, 0x97, 0x81, 0x16, 0x03, 0x86}; // РўРµСЂРјРѕРјРµС‚СЂ СЃ СЃРёРЅРµР№ РїРѕР»РѕСЃРєРѕР№
-    DeviceAddress defThermometer = {0x28, 0xFF, 0x09, 0xD5, 0x81, 0x16, 0x04, 0xD5}; // РўРµСЂРјРѕРјРµС‚СЂ Р±РµР· РїРѕР»РѕСЃРѕРє (С‡РµСЂРЅС‹Р№)
+    DeviceAddress kubThermometer = {0x28, 0xFF, 0x57, 0x97, 0x81, 0x16, 0x03, 0x86}; // Термометр с синей полоской
+    DeviceAddress defThermometer = {0x28, 0xFF, 0x09, 0xD5, 0x81, 0x16, 0x04, 0xD5}; // Термометр без полосок (черный)
 
-    float _pressure; // Р”Р°РІР»РµРЅРёРµ РґР»СЏ РєРѕСЂСЂРµРєС‚РёСЂРѕРІРєРё С‚РµРјРїРµСЂР°С‚СѓСЂС‹ РІ РџР°
-    float t_kub;     // РўРµРјРїРµСЂР°С‚СѓСЂР° РєСѓР±Р°
-    float t_def;     // РўРµРјРїРµСЂР°С‚СѓСЂР° РїРµСЂРµРґ С…РѕР»РѕРґРёР»СЊРЅРёРєРѕРј
+    float _pressure; // Давление для корректировки температуры в Па
+    float t_kub;     // Температура куба
+    float t_def;     // Температура перед холодильником
 
 #ifdef _LM35_
     struct

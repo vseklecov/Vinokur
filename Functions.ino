@@ -70,7 +70,7 @@ float alcLiq(float temp)
     return pgm_read_float_near(liq + (int)(temp * 10) - 782);
 }
 
-// f - С„РѕСЂРјР°С‚ (1-'YYYY-MM-DD HH:MM:SS', 2-'HH:MM:SS', 3-'HH:MM')
+// f - формат (1-'YYYY-MM-DD HH:MM:SS', 2-'HH:MM:SS', 3-'HH:MM')
 String formatTime(byte f = 2, time_t t = 0)
 {
   if (t == 0)
@@ -97,4 +97,51 @@ String two(int num)
   {
     return String(num);
   }
+}
+
+/* Перекодировка русских символов из UTF-8 в Windows-1251 со смещением 0x40(Ё) как в Tahoma*/
+char *utf8rusch(const char *source, char *buf)
+{
+  int i = 0, j = 0;
+  int k = strlen(source);
+  unsigned char n;
+
+  while (i < k)
+  {
+    n = source[i++];
+
+    if (n >= 0xC0)
+    {
+      switch (n)
+      {
+      case 0xD0:
+      {
+        n = source[i++];
+        if (n == 0x81)
+        {
+          n = 0x40;
+          break;
+        } //0x40 Ё
+        if (n >= 0x90 && n <= 0xBF)
+          n = n - 0x4E; //0x42 А-Я, а-п
+        break;
+      }
+      case 0xD1:
+      {
+        n = source[i++];
+        if (n == 0x91)
+        {
+          n = 0x41;
+          break;
+        } //0x41 ё
+        if (n >= 0x80 && n <= 0x8F)
+          n = n - 0x0E; //0x72 р-я
+        break;
+      }
+      }
+    }
+    buf[j++] = n;
+  }
+  buf[j] = '\0';
+  return buf;
 }

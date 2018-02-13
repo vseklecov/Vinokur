@@ -43,6 +43,7 @@ void Input::remove_char()
 {
     if (cursor == 0)
         return;
+    hideCursor();
     cursor--;
     cursor_x -= _fontXSize;
     while (value[cursor] == delimiter && cursor > 0)
@@ -51,6 +52,7 @@ void Input::remove_char()
         cursor_x -= _fontXSize;
     }
     myLCD->printChar(filler, cursor_x, cursor_y);
+    showCursor();
 }
 
 void Input::showCursor()
@@ -69,9 +71,12 @@ void Input::hideCursor()
 time_t Input::getTimeValue()
 {
     int Hour, Min, Sec;
-    if (sscanf(value, "%d:%d:%d", &Hour, &Min, &Sec) == 3)
-        return Hour * SECS_PER_HOUR + Min * SECS_PER_MIN + Sec;
-    return 0;
+    Hour = atoi(&value[0]);
+    Min = atoi(&value[3]);
+    Sec = atoi(&value[6]);
+//    if (sscanf(value, "%d:%d:%d", &Hour, &Min, &Sec) == 3)
+    return Hour * SECS_PER_HOUR + Min * SECS_PER_MIN + Sec;
+//    return 0;
 }
 
 int Input::getIntValue()

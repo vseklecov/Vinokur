@@ -6,7 +6,7 @@
   }
 
 #ifdef _LM35_
-// РљРѕСЌС„С„РёС†РёРµРЅС‚С‹ РїРµСЂРµРІРѕРґР° РЅР°РїСЂСЏР¶РµРЅРёСЏ РЅР° LM35 РІ С‚РµРјРїРµСЂР°С‚СѓСЂСѓ analogReference
+// Коэффициенты перевода напряжения на LM35 в температуру analogReference
 #define C5V 0.48828125   // DEFAULT on 5V Arduino boards
 #define C3V3 0.322265625 // DEFAULT on 3.3V Arduino boards
 #define C1V1 0.107421875 // INTERNAL on ATmega168 or ATmega328, INTERNAL1V1 on Arduino Mega
@@ -38,7 +38,7 @@ void SensorsProcess::setup()
   _bmp280ready = _bmp280.begin();
 #ifdef _DEBUG_
   if (!_bmp280ready)
-    Serial.println("Р”Р°С‚С‡РёРє BMP280 РЅРµ РїРѕРґРєР»СЋС‡РµРЅ");
+    Serial.println("Датчик BMP280 не подключен");
 #endif
 #endif
 }
@@ -69,7 +69,7 @@ void SensorsProcess::service()
 #ifdef _LM35_
   td.raw = td.raw / td.samples;
   td.samples = 1;
-  td.temp = td.raw * C5V + (101325 - _pressure) * 3E-4; // Р”Р»СЏ 5Р’ РїР»Р°С‚ СЃ РєРѕСЂСЂРµРєС†РёРµР№ РЅР° РґР°РІР»РµРЅРёРµ
+  td.temp = td.raw * C5V + (101325 - _pressure) * 3E-4; // Для 5В плат с коррекцией на давление
 #ifdef _DEBUG_
   Serial.println(" " + String(td.temp) + " " + String(td.raw) + " " + String(td.samples));
 #endif
@@ -87,7 +87,7 @@ float SensorsProcess::readTemp(DeviceAddress therm)
     float temp = _sensors.getTempC(therm);
 #ifdef _PRESS_
     if (_bmp280ready)
-      temp += (101325 - _pressure) * 3E-4; // РљРѕСЂСЂРµРєС†РёСЏ РЅР° РґР°РІР»РµРЅРёРµ
+      temp += (101325 - _pressure) * 3E-4; // Коррекция на давление
 #endif
     return temp;
   }
