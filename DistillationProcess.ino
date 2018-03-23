@@ -23,9 +23,8 @@ void DistillationProcess::service()
   switch (_state)
   {
   case STATE_STOPS:
-#ifndef _IR_
-    setNextState();
-#endif
+    if ((_sp->getThempKub() - _sp->getThempDef()) > 5)
+      setNextState();
     break;
   case STATE_HEAT:
     setHeating(100);
