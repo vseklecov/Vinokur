@@ -16,6 +16,7 @@ public:
     PARAMETERS,
     DISTIL_MASH,
     FRACTION,
+    TERMOSTAT,
   };
 
   DisplayProcess(Scheduler &manager, ProcPriority pr, unsigned int period, UTFT *LCD)
@@ -42,8 +43,6 @@ private:
 
   enum SCREENS prevScreen;
   enum SCREENS curScreen;
-
-  String utf8rus(String);
 };
 
 #endif

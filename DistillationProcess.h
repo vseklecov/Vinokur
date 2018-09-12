@@ -8,12 +8,6 @@
 #include "SensorsProcess.h"
 #include "Keys.h"
 
-const char PROCESS_START = KEY_PLAY;
-const char PROCESS_CANCEL = KEY_ON;
-const char PROCESS_PREV_STATE = KEY_PREV;
-const char PROCESS_NEXT_STATE = KEY_NEXT;
-const char PROCESS_SETTINGS = KEY_EQ;
-
 typedef enum washes { WASH_SUGAR,
                       WASH_GRAIN,
                       WASH_FRUIT,
@@ -32,9 +26,8 @@ class DistillationProcess : public Process
 {
 public:
   DistillationProcess(Scheduler &manager, ProcPriority pr, unsigned int period, SensorsProcess *sp)
-      : Process(manager, pr, period)
+      : Process(manager, pr, period), _sp(sp)
   {
-    _sp = sp;
     boiling_kub = 0;
     steam_def = 0;
     _delay = 0;

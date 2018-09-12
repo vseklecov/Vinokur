@@ -2,6 +2,8 @@
 #define __OBMEN_H__
 #include "Vinokur.h"
 
+#define SET_VALUE_FLASH   ('F')
+
 const long BAUDRATE = 115200;
 
 const char TIME_HEADER = 'T'; // Set time

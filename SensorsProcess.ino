@@ -18,11 +18,11 @@ void SensorsProcess::setup()
   _sensors.begin();
   if (_sensors.isConnected(kubThermometer))
   {
-    _sensors.setResolution(kubThermometer, TEMP_12_BIT);
+    _sensors.setResolution(kubThermometer, 12);
   }
   if (_sensors.isConnected(defThermometer))
   {
-    _sensors.setResolution(defThermometer, TEMP_12_BIT);
+    _sensors.setResolution(defThermometer, 12);
   }
 
   _sensors.setWaitForConversion(false);
@@ -52,7 +52,10 @@ void SensorsProcess::service()
 
 #ifdef _PRESS_
   if (_bmp280ready)
+  {
+    temp = _bmp280.readTemperature();
     _pressure = _bmp280.readPressure();
+  }
 #endif
 
   t_kub = readTemp(kubThermometer);
@@ -85,6 +88,8 @@ float SensorsProcess::readTemp(DeviceAddress therm)
   if (_sensors.isConnected(therm))
   {
     float temp = _sensors.getTempC(therm);
+    if (temp == DEVICE_DISCONNECTED_C)
+      return 0.0;
 #ifdef _PRESS_
     if (_bmp280ready)
       temp += (101325 - _pressure) * 3E-4; // Коррекция на давление

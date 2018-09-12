@@ -1,27 +1,36 @@
 #ifndef __KEYS_H__
 #define __KEYS_H__
 
-const char KEY_NONE = '\0';
-const char KEY_ON = '@';
-const char KEY_MODE = 'M';
-const char KEY_SOUND = '\e';
-const char KEY_PLAY = 'P';
-const char KEY_PREV = 'S';
-const char KEY_NEXT = 'N';
-const char KEY_EQ = 'Q';
-const char KEY_MINUS = '-';
-const char KEY_PLUS = '+';
-const char KEY_ARROW = '\b';
-const char KEY_U_SD = '\n';
-const char KEY_0 = '0';
-const char KEY_1 = '1';
-const char KEY_2 = '2';
-const char KEY_3 = '3';
-const char KEY_4 = '4';
-const char KEY_5 = '5';
-const char KEY_6 = '6';
-const char KEY_7 = '7';
-const char KEY_8 = '8';
-const char KEY_9 = '9';
+// Наименование клавиш пульта управления
+#define KEY_NONE    ('\0')
+#define KEY_ON      ('@')
+#define KEY_MODE    ('M')
+#define KEY_SOUND   ('\e')
+#define KEY_PLAY    ('P')
+#define KEY_PREV    ('S')
+#define KEY_NEXT    ('N')
+#define KEY_EQ      ('Q')
+#define KEY_MINUS   ('-')
+#define KEY_PLUS    ('+')
+#define KEY_ARROW   ('\b')
+#define KEY_U_SD    ('\n')
+#define KEY_0       ('0')
+#define KEY_1       ('1')
+#define KEY_2       ('2')
+#define KEY_3       ('3')
+#define KEY_4       ('4')
+#define KEY_5       ('5')
+#define KEY_6       ('6')
+#define KEY_7       ('7')
+#define KEY_8       ('8')
+#define KEY_9       ('9')
+
+// Управление процессами и экранами
+#define PROCESS_START       KEY_PLAY
+#define PROCESS_CANCEL      KEY_ON
+#define PROCESS_PREV_STATE  KEY_PREV
+#define PROCESS_NEXT_STATE  KEY_NEXT
+#define PROCESS_SETTINGS    KEY_EQ
+
 
 #endif

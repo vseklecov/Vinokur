@@ -14,6 +14,9 @@ SensorsProcess _sensors(sched, HIGH_PRIORITY, 1000, &ds);
 DistillMashProcess _distilMash(sched, HIGH_PRIORITY, 500, &_sensors);
 FractioningProcess _refluxStill(sched, HIGH_PRIORITY, 500, &_sensors);
 
+#include "Termostat.h"
+TermostatProcess termostat(sched, HIGH_PRIORITY, 500, _sensors);
+
 #ifdef _TFT_
 #include "DisplayProcess.h"
 UTFT myLCD(CTE32HR, TFT_RS, TFT_WR, TFT_CS, TFT_RST);
@@ -32,7 +35,7 @@ KeypadProcess _keypad(sched, HIGH_PRIORITY, 500);
 
 #ifdef _IR_
 #include "IRProcess.h"
-IRProcess _ir(sched, HIGH_PRIORITY, 500, IR_PIN);
+IRProcess _ir(sched, HIGH_PRIORITY, 100, IR_PIN);
 #endif
 
 #ifdef _RTC_
@@ -65,6 +68,7 @@ void setup()
 #else
   _distilMash.add(false);
   _refluxStill.add(false);
+  termostat.add(false);
 #endif
 
 #ifdef _TFT_
@@ -96,7 +100,7 @@ void setup()
 #endif
 
 #else
-  setTime(DEFAULT_TIME);
+  //setTime(DEFAULT_TIME);
   requestSync();
   setSyncProvider(requestSync);
 #endif
@@ -114,4 +118,5 @@ void loop()
 #endif
 
   sched.run();
+  delay(20);
 }

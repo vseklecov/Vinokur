@@ -12,7 +12,10 @@ extern SensorsProcess _sensors;
 extern DistillMashProcess _distilMash;
 extern FractioningProcess _refluxStill;
 
-extern String formatTime(byte, time_t);
+#include "Termostat.h"
+extern TermostatProcess termostat;
+
+#include "Functions.h"
 
 void LoggerProcess::setup()
 {
@@ -20,60 +23,93 @@ void LoggerProcess::setup()
     {
         disable();
     }
+    _write_header = false;
 }
 
 void LoggerProcess::service()
 {
-    DistillationProcess *_still;
 #ifdef _DEBUG_
     unsigned long b_t = millis();
 #endif
 
-    if (_distilMash.isEnabled())
-        _still = &_distilMash;
-    else if (_refluxStill.isEnabled())
-        _still = &_refluxStill;
-    else
+    if (termostat.isEnabled())
     {
-        _write_header = false;
-        return;
-    }
-
-    filenameLog = "distmash.csv";
-    File dataFile = SD.open(filenameLog, FILE_WRITE);
-    if (dataFile)
-    {
-        switch (_still->getState())
+        filenameLog = "termstat.csv";
+        File dataFile = SD.open(filenameLog, FILE_WRITE);
+        if (dataFile)
         {
-        case STATE_STOPS:
             if (!_write_header)
             {
-                dataFile.println(_still->getHeader());
+                dataFile.println("Термостат");
                 _write_header = true;
             }
-            break;
-        //case STATE_END:
-        case STATE_CANCEL:
-            break;
-        default:
-        {
             dataFile.print(formatTime(2, 0));
-#ifdef _LM35_
-            dataFile.print(";" + String(_sensors.getTD()));
-#endif
             dataFile.print(";" + String(_sensors.getThempKub()));
             dataFile.print(";" + String(_sensors.getThempDef()));
-#ifdef _PRESS_
             dataFile.print(";" + String(_sensors.getPressure()));
-#endif
-            dataFile.print(";" + _still->getStateString());
-            if (_still->boiling_kub > 0.0)
-                dataFile.println(";" + String(_still->boiling_kub));
-            else
-                dataFile.println(";" + String(_still->temp_boiling));
+            dataFile.println(";" + termostat.getStateString());
+            dataFile.close();
         }
+    } else if (_distilMash.isEnabled())
+    {
+        filenameLog = "distmash.csv";
+        File dataFile = SD.open(filenameLog, FILE_WRITE);
+        if (dataFile)
+        {
+            switch (_distilMash.getState())
+            {
+            case STATE_STOPS:
+                if (!_write_header)
+                {
+                    dataFile.println(_distilMash.getHeader());
+                    _write_header = true;
+                }
+                break;
+            case STATE_CANCEL:
+                break;
+            default:
+                dataFile.print(formatTime(2, 0));
+                dataFile.print(";" + String(_sensors.getThempKub()));
+                dataFile.print(";" + String(_sensors.getThempDef()));
+                dataFile.print(";" + String(_sensors.getPressure()));
+                dataFile.print(";" + _distilMash.getStateString());
+                if (_distilMash.boiling_kub > 0.0)
+                    dataFile.println(";" + String(_distilMash.boiling_kub));
+                else
+                    dataFile.println(";" + String(_distilMash.temp_boiling));
+            }
+            dataFile.close();
         }
-        dataFile.close();
+    } else if (_refluxStill.isEnabled())
+    {
+        filenameLog = "reflux.csv";
+        File dataFile = SD.open(filenameLog, FILE_WRITE);
+        if (dataFile)
+        {
+            switch (_refluxStill.getState())
+            {
+            case STATE_STOPS:
+                if (!_write_header)
+                {
+                    dataFile.println(_refluxStill.getHeader());
+                    _write_header = true;
+                }
+                break;
+            case STATE_CANCEL:
+                break;
+            default:
+                dataFile.print(formatTime(2, 0));
+                dataFile.print(";" + String(_sensors.getThempKub()));
+                dataFile.print(";" + String(_sensors.getThempDef()));
+                dataFile.print(";" + String(_sensors.getPressure()));
+                dataFile.print(";" + _refluxStill.getStateString());
+                if (_refluxStill.boiling_kub > 0.0)
+                    dataFile.println(";" + String(_refluxStill.boiling_kub));
+                else
+                    dataFile.println(";" + String(_refluxStill.temp_boiling));
+            }
+            dataFile.close();
+        }
     }
 
 #ifdef _DEBUG_

@@ -10,17 +10,9 @@ void IRProcess::setup()
 
 void IRProcess::service()
 {
-#ifdef _DEBUG_
-    unsigned long b_t = millis();
-#endif
-
     char value = getch();
     if (value != KEY_NONE && _func_callback != NULL)
         _func_callback(value);
-
-#ifdef _DEBUG_
-    Serial.println("IR Process: " + String(millis() - b_t));
-#endif
 }
 
 char IRProcess::getch()
