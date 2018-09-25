@@ -36,25 +36,25 @@ void DisplayProcess::setup()
     _myLCD->InitLCD();
     _myLCD->clrScr();
     _myLCD->setFont(Tahoma1251);
-    _fontXSize = _myLCD->getFontXsize();
-    _fontYSize = _myLCD->getFontYsize();
+    _X = _myLCD->getFontXsize();
+    _Y = _myLCD->getFontYsize();
 
     _myLCD->setColor(VGA_AQUA);
-    _myLCD->print((char *)"ВИНОКУР", CENTER, _fontYSize * 0);
-    _myLCD->print((char *)"версия 0.20", CENTER, _fontYSize * 1);
+    _myLCD->print((char *)"ВИНОКУР", CENTER, _Y * 0);
+    _myLCD->print((char *)"версия 0.20", CENTER, _Y * 1);
 
-    _myLCD->print((char *)"Куб", _fontXSize, _fontYSize * 2);
-    _myLCD->print((char *)"Деф", _fontXSize, _fontYSize * 3);
+    _myLCD->print((char *)"Куб", _X, _Y * 2);
+    _myLCD->print((char *)"Деф", _X, _Y * 3);
 
-    _myLCD->print((char *)"мм", _fontXSize * 18, _fontYSize * 9);
+    _myLCD->print((char *)"мм", _X * 18, _Y * 9);
 
-    heating = new Button(_fontXSize / 2, _fontYSize * 5, (char *)"Нагр");
-    cool = new Button(_fontXSize * 7, _fontYSize * 5, (char *)"Охлж");
-    finish = new Button(_fontXSize * 12.5, _fontYSize * 5, (char *)"Конец");
+    heating = new Button(_X / 2, _Y * 5, (char *)"Нагр");
+    cool = new Button(_X * 7, _Y * 5, (char *)"Охлж");
+    finish = new Button(_X * 12.5, _Y * 5, (char *)"Конец");
 
     if (timeStatus() != timeSet) {
-        _myLCD->print((char *)"Время:", 0, _fontYSize * 6);
-        _myLCD->print(_time, _fontXSize * 8, _fontYSize * 6);
+        _myLCD->print((char *)"Время:", 0, _Y * 6);
+        _myLCD->print(_time, _X * 8, _Y * 6);
         _ir.setCallback(getTime);
     }
 }
@@ -67,10 +67,10 @@ void DisplayProcess::changeScreen()
     case MAIN_MENU: // Основное меню
         _myLCD->setColor(VGA_AQUA);
         _myLCD->print((char *)"Режим работы:", CENTER, 0);
-        _myLCD->print((char *)"0. Параметры", 0, _fontYSize);
-        _myLCD->print("1. " + _distilMash.getHeader(), 0, _fontYSize * 2);
-        _myLCD->print("2. " + _refluxStill.getHeader(), 0, _fontYSize * 3);
-        _myLCD->print((char*)"3. Термостат", 0, _fontYSize * 4);
+        _myLCD->print((char *)"0. Параметры", 0, _Y);
+        _myLCD->print("1. " + _distilMash.getHeader(), 0, _Y * 2);
+        _myLCD->print("2. " + _refluxStill.getHeader(), 0, _Y * 3);
+        _myLCD->print((char*)"3. Термостат", 0, _Y * 4);
         _ir.setCallback(getMode);
         break;
     case PARAMETERS: // Параметры
@@ -78,11 +78,11 @@ void DisplayProcess::changeScreen()
     case DISTIL_MASH: // Первая перегонка браги
         _myLCD->setColor(VGA_AQUA);
         _myLCD->print(_distilMash.getHeader(), CENTER, 0);
-        _myLCD->print((char *)"Куб", _fontXSize, _fontYSize * 2);
-        _myLCD->print((char *)"Деф", _fontXSize, _fontYSize * 3);
-        _myLCD->printChar('%', _fontXSize * 16, _fontYSize * 2);
-        _myLCD->printChar('%', _fontXSize * 16, _fontYSize * 3);
-        _myLCD->print((char *)"мм", _fontXSize * 18, _fontYSize * 9);
+        _myLCD->print((char *)"Куб", _X, _Y * 2);
+        _myLCD->print((char *)"Деф", _X, _Y * 3);
+        _myLCD->printChar('%', _X * 16, _Y * 2);
+        _myLCD->printChar('%', _X * 16, _Y * 3);
+        _myLCD->print((char *)"мм", _X * 18, _Y * 9);
         cool->draw();
         heating->draw();
         finish->draw();
@@ -90,11 +90,11 @@ void DisplayProcess::changeScreen()
     case FRACTION: // Дробная перегонка
         _myLCD->setColor(VGA_AQUA);
         _myLCD->print(_refluxStill.getHeader(), CENTER, 0);
-        _myLCD->print((char *)"Куб", _fontXSize, _fontYSize * 2);
-        _myLCD->print((char *)"Деф", _fontXSize, _fontYSize * 3);
-        _myLCD->printChar('%', _fontXSize * 16, _fontYSize * 2);
-        _myLCD->printChar('%', _fontXSize * 16, _fontYSize * 3);
-        _myLCD->print((char *)"мм", _fontXSize * 18, _fontYSize * 9);
+        _myLCD->print((char *)"Куб", _X, _Y * 2);
+        _myLCD->print((char *)"Деф", _X, _Y * 3);
+        _myLCD->printChar('%', _X * 16, _Y * 2);
+        _myLCD->printChar('%', _X * 16, _Y * 3);
+        _myLCD->print((char *)"мм", _X * 18, _Y * 9);
         cool->draw();
         heating->draw();
         finish->draw();
@@ -113,40 +113,50 @@ void DisplayProcess::changeScreen()
 
 void DisplayProcess::service()
 {
+    float temp_kub = _sensors.getThempKub();
+    float temp_def = _sensors.getThempDef();
+    float temp_room = _sensors.getThemp();
+    float pressure = _sensors.getPressure();
+    float press_mm_Hg = round(pressure * 7.5E-3); // Давление в мм ртутного столба
+    float delta = (101325 - pressure) * 3E-4; // Поправка температуры кипения на давление
+
     if (curScreen != prevScreen)
         changeScreen();
     switch (curScreen)
     {
     case SPLASH:
-        _myLCD->printNumF(_sensors.getThempKub(), 1, _fontXSize * 5, _fontYSize * 2, '.', 5);
-        _myLCD->printNumF(_sensors.getThempDef(), 1, _fontXSize * 5, _fontYSize * 3, '.', 5);
+        _myLCD->printNumF(temp_kub, 1, _X * 5, _Y * 2, '.', 5);
+        _myLCD->printNumF(temp_def, 1, _X * 5, _Y * 3, '.', 5);
 
-        _myLCD->printNumF(_sensors.getThemp(), 1, 15 * _fontXSize, 8 * _fontYSize, '.', 5);
-        _myLCD->printNumI(round(_sensors.getPressure() * 7.5E-3), _fontXSize * 15, _fontYSize * 9, 3);
+        _myLCD->printNumF(temp_room, 1, 15 * _X, 8 * _Y, '.', 5);
+        _myLCD->printNumI(press_mm_Hg, _X * 15, _Y * 9, 3);
         if (next_ch != 0)
         {
             if (_time[next_ch - 1] == ':')
-                showCursor(_fontXSize * (6 + next_ch), _fontYSize * 6, _myLCD->getBackColor());
+                showCursor(_X * (6 + next_ch), _Y * 6, _myLCD->getBackColor());
             else
-                showCursor(_fontXSize * (7 + next_ch), _fontYSize * 6, _myLCD->getBackColor());
+                showCursor(_X * (7 + next_ch), _Y * 6, _myLCD->getBackColor());
         }
-        showCursor(_fontXSize * (8 + next_ch), _fontYSize * 6, _myLCD->getColor());
+        showCursor(_X * (8 + next_ch), _Y * 6, _myLCD->getColor());
         break;
     case MAIN_MENU: // Основное меню
         break;
     case DISTIL_MASH: // Первая перегонка браги
         _myLCD->setColor(VGA_AQUA);
-        _myLCD->print(_distilMash.getStateString(), 0, _fontYSize);
-        _myLCD->print(formatTime(2, now() - _distilMash.getTimeBegin()), _fontXSize * 7, _fontYSize);
-        _myLCD->print(formatTime(3, 0), CENTER, _fontYSize * 9);
-        _myLCD->printNumI(round(_sensors.getPressure() * 7.5E-3), _fontXSize * 15, _fontYSize * 9, 3);
+        _myLCD->print(_distilMash.getStateString(), 0, _Y);
+        _myLCD->print(formatTime(2, now() - _distilMash.getTimeBegin()), _X * 7, _Y);
+        _myLCD->print(formatTime(3, 0), CENTER, _Y * 9);
+        _myLCD->printNumF(temp_room, 1, 15 * _X, 8 * _Y, '.', 5);
+        _myLCD->printNumI(press_mm_Hg, _X * 15, _Y * 9, 3);
         if (_distilMash.boiling_kub > 0)
-        _myLCD->printNumF(_distilMash.boiling_kub, 1, 0, _fontYSize * 9);
+        _myLCD->printNumF(_distilMash.boiling_kub, 1, 0, _Y * 9);
 
-        _myLCD->printNumF(_sensors.getThempKub(), 1, _fontXSize * 5, _fontYSize * 2, '.', 5);
-        _myLCD->printNumF(_sensors.getThempDef(), 1, _fontXSize * 5, _fontYSize * 3, '.', 5);
-        _myLCD->printNumF(alcLiq(_sensors.getThempKub()), 1, _fontXSize * 12, _fontYSize * 2, '.', 4);
-        _myLCD->printNumF(alcSteam(_sensors.getThempDef()), 1, _fontXSize * 12, _fontYSize * 3, '.', 4);
+        _myLCD->printNumF(temp_kub, 1, _X * 5, _Y * 2, '.', 5);
+        _myLCD->printNumF(temp_def, 1, _X * 5, _Y * 3, '.', 5);
+        // Для короткого термометра в кубе: пересчет из пара в жидкость
+        // TODO
+        _myLCD->printNumF(alcLiq(temp_kub + delta), 1, _X * 12, _Y * 2, '.', 4);
+        _myLCD->printNumF(alcSteam(temp_def + delta), 1, _X * 12, _Y * 3, '.', 4);
         // Управление
         if (_distilMash.getHeating() != heating->getState())
         {
@@ -170,16 +180,17 @@ void DisplayProcess::service()
         break;
     case FRACTION:
         _myLCD->setColor(VGA_AQUA);
-        _myLCD->print(_refluxStill.getStateString(), 0, _fontYSize);
-        _myLCD->print(formatTime(2, now() - _refluxStill.getTimeBegin()), _fontXSize * 7, _fontYSize);
-        _myLCD->print(formatTime(3, 0), CENTER, _fontYSize * 9);
-        _myLCD->printNumI(round(_sensors.getPressure() * 7.5E-3), _fontXSize * 15, _fontYSize * 9, 3);
+        _myLCD->print(_refluxStill.getStateString(), 0, _Y);
+        _myLCD->print(formatTime(2, now() - _refluxStill.getTimeBegin()), _X * 7, _Y);
+        _myLCD->print(formatTime(3, 0), CENTER, _Y * 9);
+        _myLCD->printNumF(temp_room, 1, 15 * _X, 8 * _Y, '.', 5);
+        _myLCD->printNumI(press_mm_Hg, _X * 15, _Y * 9, 3);
         if (_refluxStill.boiling_kub > 0)
-            _myLCD->printNumF(_refluxStill.boiling_kub, 1, 0, _fontYSize * 9);
-        _myLCD->printNumF(_sensors.getThempKub(), 1, _fontXSize * 5, _fontYSize * 2, '.', 5);
-        _myLCD->printNumF(_sensors.getThempDef(), 1, _fontXSize * 5, _fontYSize * 3, '.', 5);
-        _myLCD->printNumF(alcLiq(_sensors.getThempKub()), 1, _fontXSize * 12, _fontYSize * 2, '.', 4);
-        _myLCD->printNumF(alcSteam(_sensors.getThempDef()), 1, _fontXSize * 12, _fontYSize * 3, '.', 4);
+            _myLCD->printNumF(_refluxStill.boiling_kub, 1, 0, _Y * 9);
+        _myLCD->printNumF(temp_kub, 1, _X * 5, _Y * 2, '.', 5);
+        _myLCD->printNumF(temp_def, 1, _X * 5, _Y * 3, '.', 5);
+        _myLCD->printNumF(alcLiq(temp_kub + delta), 1, _X * 12, _Y * 2, '.', 4);
+        _myLCD->printNumF(alcSteam(temp_def + delta), 1, _X * 12, _Y * 3, '.', 4);
 
         // Управление
         if (_refluxStill.getHeating() != heating->getState())
@@ -216,7 +227,7 @@ void DisplayProcess::showCursor(int x, int y, word color)
 {
     word fcolor = _myLCD->getColor();
     _myLCD->setColor(color);
-    _myLCD->fillRect(x, y + _fontYSize - 1, x + _fontXSize, y + _fontYSize);
+    _myLCD->fillRect(x, y + _Y - 1, x + _X, y + _Y);
     _myLCD->setColor(fcolor);
 }
 

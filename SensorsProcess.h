@@ -51,6 +51,8 @@ class SensorsProcess : public Process
     float temp;      // Температура в помещении
     float t_kub;     // Температура куба
     float t_def;     // Температура перед холодильником
+    unsigned long alarm_kub = 0;
+    unsigned long alarm_def = 0;
 
 #ifdef _LM35_
     struct

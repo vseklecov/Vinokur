@@ -45,7 +45,7 @@ void SensorsProcess::setup()
 
 void SensorsProcess::service()
 {
-
+  float temp;
 #ifdef _DEBUG_
   unsigned long b_t = millis();
 #endif
@@ -57,9 +57,32 @@ void SensorsProcess::service()
     _pressure = _bmp280.readPressure();
   }
 #endif
-
-  t_kub = readTemp(kubThermometer);
-  t_def = readTemp(defThermometer);
+  temp = _sensors.getTempC(kubThermometer);
+  if (temp == DEVICE_DISCONNECTED_C)
+  {
+    if (alarm_kub == 0)
+      alarm_kub = millis();
+    else if ((millis() - alarm_kub) > 10000)
+      t_kub = 0.0;
+  }
+  else
+  {
+    t_kub = temp;
+    alarm_kub = 0;
+  }
+  temp = _sensors.getTempC(defThermometer);
+  if (temp == DEVICE_DISCONNECTED_C)
+  {
+    if (alarm_def == 0)
+      alarm_def = millis();
+    else if ((millis() - alarm_def) > 10000)
+      t_def = 0.0;
+  }
+  else
+  {
+    t_def = temp;
+    alarm_def = 0;
+  }
 
   _sensors.setWaitForConversion(false);
   _sensors.requestTemperatures();
@@ -85,18 +108,14 @@ void SensorsProcess::service()
 
 float SensorsProcess::readTemp(DeviceAddress therm)
 {
-  if (_sensors.isConnected(therm))
-  {
     float temp = _sensors.getTempC(therm);
     if (temp == DEVICE_DISCONNECTED_C)
-      return 0.0;
+      return DEVICE_DISCONNECTED_C;
 #ifdef _PRESS_
     if (_bmp280ready)
       temp += (101325 - _pressure) * 3E-4; // Коррекция на давление
 #endif
     return temp;
-  }
-  return 0.0;
 }
 
 #ifdef _LM35_

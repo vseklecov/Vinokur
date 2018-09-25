@@ -38,8 +38,8 @@ public:
 
 private:
   UTFT *_myLCD;
-  byte _fontXSize = 0;
-  byte _fontYSize = 0;
+  byte _X = 0;
+  byte _Y = 0;
 
   enum SCREENS prevScreen;
   enum SCREENS curScreen;
